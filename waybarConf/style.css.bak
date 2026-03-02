@@ -1,0 +1,170 @@
+@define-color bg        rgba(6, 9, 14, 0.96);
+@define-color bg_hover  rgba(15, 22, 30, 0.98);
+@define-color border    #00ff88;
+@define-color fg        #b0ffcc;
+@define-color fg_dim    #3a6a50;
+@define-color neon_grn  #00ff88;
+@define-color neon_cyn  #00d4ff;
+@define-color neon_yel  #ffb700;
+@define-color neon_red  #ff2a6d;
+@define-color neon_mag  #d400ff;
+@define-color neon_wht  #e0ffe8;
+
+/* ── Bar ─────────────────────────────────────────────────────────────────── */
+window#waybar {
+  background: @bg;
+  color: @fg;
+  font-family: "JetBrainsMono Nerd Font", "JetBrainsMono NF", monospace;
+  font-size: 12px;
+  border-bottom: 1px solid @border;
+}
+
+/* ── Groups ──────────────────────────────────────────────────────────────── */
+.modules-left,
+.modules-center,
+.modules-right {
+  background: transparent;
+}
+
+/* ── All modules base ────────────────────────────────────────────────────── */
+#workspaces, #window, #clock, #cpu, #memory,
+#network, #bluetooth, #pulseaudio, #battery, #custom-tuned,
+#tray, #custom-power {
+  padding: 0 10px;
+  color: @fg;
+}
+
+/* separator between right modules */
+#cpu, #memory, #network, #bluetooth, #pulseaudio, #battery,
+#custom-tuned, #tray {
+  border-right: 1px solid @fg_dim;
+}
+
+/* ── Workspaces ──────────────────────────────────────────────────────────── */
+#workspaces {
+  padding: 0 6px;
+}
+#workspaces button {
+  padding: 0 7px;
+  color: @fg_dim;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  min-width: 0;
+  transition: all 0.12s ease;
+}
+#workspaces button.active {
+  color: @neon_grn;
+  border-bottom: 2px solid @neon_grn;
+}
+#workspaces button.urgent {
+  color: @neon_red;
+  border-bottom: 2px solid @neon_red;
+}
+#workspaces button:hover {
+  background: @bg_hover;
+  color: @neon_wht;
+}
+
+/* ── Window title ────────────────────────────────────────────────────────── */
+#window {
+  color: @fg_dim;
+  font-style: italic;
+}
+
+/* ── Clock ───────────────────────────────────────────────────────────────── */
+#clock {
+  color: @neon_grn;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* ── CPU ─────────────────────────────────────────────────────────────────── */
+#cpu {
+  color: @neon_cyn;
+}
+#cpu.warning  { color: @neon_yel; }
+#cpu.critical { color: @neon_red; }
+
+/* ── Memory ──────────────────────────────────────────────────────────────── */
+#memory {
+  color: @neon_cyn;
+}
+#memory.warning  { color: @neon_yel; }
+#memory.critical { color: @neon_red; }
+
+/* ── Network ─────────────────────────────────────────────────────────────── */
+#network {
+  color: @neon_grn;
+}
+#network.disconnected {
+  color: @fg_dim;
+}
+
+/* ── Bluetooth ───────────────────────────────────────────────────────────── */
+#bluetooth {
+  color: @neon_grn;
+}
+#bluetooth.disabled,
+#bluetooth.off {
+  color: @fg_dim;
+}
+
+/* ── Audio ───────────────────────────────────────────────────────────────── */
+#pulseaudio {
+  color: @neon_yel;
+}
+#pulseaudio.muted {
+  color: @fg_dim;
+}
+
+/* ── Battery ─────────────────────────────────────────────────────────────── */
+#battery {
+  color: @neon_grn;
+}
+#battery.charging, #battery.plugged {
+  color: @neon_cyn;
+}
+#battery.warning:not(.charging) {
+  color: @neon_yel;
+}
+#battery.critical:not(.charging) {
+  color: @neon_red;
+  animation: blink 1s linear infinite;
+}
+
+/* ── Tuned profile ───────────────────────────────────────────────────────── */
+#custom-tuned {
+  color: @neon_mag;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+#custom-tuned:hover {
+  color: @neon_wht;
+  background: @bg_hover;
+}
+
+/* ── Tray ────────────────────────────────────────────────────────────────── */
+#tray {
+  padding: 0 8px;
+}
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  color: @neon_red;
+}
+
+/* ── Power ───────────────────────────────────────────────────────────────── */
+#custom-power {
+  color: @neon_red;
+  font-size: 14px;
+  padding: 0 14px 0 10px;
+}
+#custom-power:hover {
+  color: @neon_wht;
+  background: @bg_hover;
+}
+
+/* ── Blink animation ─────────────────────────────────────────────────────── */
+@keyframes blink {
+  to { opacity: 0.25; }
+}

@@ -1,0 +1,335 @@
+/* ── Palette ──────────────────────────────────────────── */
+@define-color black       #000000;
+@define-color black_a     rgba(0, 0, 0, 0.98);
+@define-color surface     #080808;
+@define-color hover       rgba(0, 255, 170, 0.06);
+
+@define-color green       #00ffaa;
+@define-color cyan        #00e5ff;
+@define-color yellow      #ffe600;
+@define-color red         #ff0044;
+@define-color magenta     #dd44ff;
+@define-color dim         #1a3328;
+@define-color mid         #338866;
+@define-color white       #eeffee;
+
+/* ── Bar ──────────────────────────────────────────────── */
+window#waybar {
+    background: @black;
+    color: @green;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 1px solid @dim;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    background: transparent;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Every module ─────────────────────────────────────── */
+#custom-arch,
+#workspaces,
+#window,
+#clock,
+#cpu,
+#memory,
+#network,
+#bluetooth,
+#pulseaudio,
+#battery,
+#custom-tuned,
+#tray,
+#custom-power,
+#custom-sep,
+#custom-weather,
+#mpris,
+#custom-media-prev,
+#custom-media-next {
+    padding: 0 10px;
+    margin: 0;
+    color: @green;
+    border-radius: 0;
+    border: none;
+    transition: none;
+}
+
+/* ── Arch logo ────────────────────────────────────────── */
+#custom-arch {
+    color: @cyan;
+    font-size: 16px;
+    padding: 0 12px 0 14px;
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+}
+
+/* ── Workspaces ───────────────────────────────────────── */
+#workspaces {
+    padding: 0 4px;
+}
+
+#workspaces button {
+    padding: 0 4px;
+    margin: 0;
+    color: @dim;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    min-width: 0;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    letter-spacing: 0;
+}
+
+#workspaces button.active {
+    color: @green;
+    text-shadow: 0 0 8px rgba(0, 255, 170, 0.6);
+}
+
+#workspaces button.urgent {
+    color: @red;
+    text-shadow: 0 0 8px rgba(255, 0, 68, 0.6);
+    animation: blink 0.6s steps(2, end) infinite;
+}
+
+#workspaces button:hover {
+    color: @white;
+    background: @hover;
+}
+
+/* ── Window ───────────────────────────────────────────── */
+#window {
+    color: @mid;
+    font-size: 12px;
+    padding-left: 2px;
+}
+
+/* ── Weather ──────────────────────────────────────────── */
+#custom-weather {
+    color: @yellow;
+    font-size: 13px;
+    text-shadow: 0 0 8px rgba(255, 230, 0, 0.35);
+}
+
+#custom-weather:hover {
+    background: @hover;
+}
+
+/* ── Clock ────────────────────────────────────────────── */
+#clock {
+    color: @green;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+/* ── CPU ──────────────────────────────────────────────── */
+#cpu {
+    color: @cyan;
+    min-width: 64px;
+}
+
+#cpu.high {
+    color: @yellow;
+}
+
+#cpu.critical {
+    color: @red;
+    text-shadow: 0 0 8px rgba(255, 0, 68, 0.5);
+    animation: blink 0.5s steps(2, end) infinite;
+}
+
+#cpu:hover {
+    background: @hover;
+}
+
+/* ── Memory ───────────────────────────────────────────── */
+#memory {
+    color: @cyan;
+    min-width: 64px;
+}
+
+#memory.high {
+    color: @yellow;
+}
+
+#memory.critical {
+    color: @red;
+    text-shadow: 0 0 8px rgba(255, 0, 68, 0.5);
+}
+
+#memory:hover {
+    background: @hover;
+}
+
+/* ── Network ──────────────────────────────────────────── */
+#network {
+    color: @green;
+    min-width: 210px;
+}
+
+#network.disconnected {
+    color: @red;
+}
+
+#network:hover {
+    background: @hover;
+}
+
+/* ── Bluetooth ────────────────────────────────────────── */
+#bluetooth {
+    color: @cyan;
+}
+
+#bluetooth.disabled,
+#bluetooth.off {
+    color: @dim;
+}
+
+#bluetooth:hover {
+    background: @hover;
+}
+
+/* ── Pulseaudio ───────────────────────────────────────── */
+#pulseaudio {
+    color: @yellow;
+}
+
+#pulseaudio.muted {
+    color: @dim;
+}
+
+#pulseaudio:hover {
+    background: @hover;
+}
+
+/* ── Battery ──────────────────────────────────────────── */
+#battery {
+    color: @green;
+    min-width: 72px;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @cyan;
+    text-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
+}
+
+#battery.warning:not(.charging) {
+    color: @yellow;
+}
+
+#battery.critical:not(.charging) {
+    color: @red;
+    text-shadow: 0 0 10px rgba(255, 0, 68, 0.6);
+    animation: blink 0.5s steps(2, end) infinite;
+}
+
+/* ── Tuned ────────────────────────────────────────────── */
+#custom-tuned {
+    color: @magenta;
+    font-size: 12px;
+    text-shadow: 0 0 6px rgba(221, 68, 255, 0.3);
+}
+
+#custom-tuned:hover {
+    background: @hover;
+}
+
+/* ── Tray ─────────────────────────────────────────────── */
+#tray {
+    padding: 0 8px;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* ── Power ────────────────────────────────────────────── */
+#custom-power {
+    color: @red;
+    font-size: 14px;
+    padding: 0 14px 0 10px;
+}
+
+#custom-power:hover {
+    background: @red;
+    color: @black;
+}
+
+/* ── Separator ────────────────────────────────────────── */
+#custom-sep {
+    color: @dim;
+    font-size: 11px;
+    padding: 0 2px;
+}
+
+/* ── Media controls ───────────────────────────────────── */
+#custom-media-prev,
+#custom-media-next {
+    color: @dim;
+    font-size: 14px;
+    padding: 0 6px;
+}
+
+#custom-media-prev:hover,
+#custom-media-next:hover {
+    color: @green;
+    background: @hover;
+    text-shadow: 0 0 8px rgba(0, 255, 170, 0.5);
+}
+
+#custom-media-prev:active,
+#custom-media-next:active {
+    color: @cyan;
+}
+
+/* ── MPRIS ────────────────────────────────────────────── */
+#mpris {
+    color: @green;
+    font-size: 12px;
+    padding: 0 4px;
+    text-shadow: 0 0 8px rgba(0, 255, 170, 0.3);
+}
+
+#mpris.paused {
+    color: @mid;
+    text-shadow: none;
+}
+
+#mpris.stopped {
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+
+#mpris:hover {
+    background: @hover;
+}
+
+/* ── Tooltip ──────────────────────────────────────────── */
+tooltip {
+    background: @black;
+    border: 1px solid @green;
+    border-radius: 0;
+    padding: 6px 10px;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 12px;
+    color: @green;
+}
+
+tooltip label {
+    color: @green;
+}
+
+/* ── Animation ────────────────────────────────────────── */
+@keyframes blink {
+    from { opacity: 1; }
+    50%  { opacity: 0; }
+    to   { opacity: 1; }
+}
