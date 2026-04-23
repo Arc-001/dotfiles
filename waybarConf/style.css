@@ -1,6 +1,5 @@
 /* ── Palette ──────────────────────────────────────────── */
 @define-color black       #000000;
-@define-color black_a     rgba(0, 0, 0, 0.98);
 @define-color surface     #080808;
 @define-color hover       rgba(0, 255, 170, 0.06);
 
@@ -8,7 +7,6 @@
 @define-color cyan        #00e5ff;
 @define-color yellow      #ffe600;
 @define-color red         #ff0044;
-@define-color magenta     #dd44ff;
 @define-color dim         #1a3328;
 @define-color mid         #338866;
 @define-color white       #eeffee;
@@ -72,6 +70,7 @@ window#waybar {
 /* ── Workspaces ───────────────────────────────────────── */
 #workspaces {
     padding: 0 4px;
+    margin-right: 4px;
 }
 
 #workspaces button {
@@ -108,6 +107,7 @@ window#waybar {
     color: @mid;
     font-size: 12px;
     padding-left: 2px;
+    margin-right: 6px;
 }
 
 /* ── Weather ──────────────────────────────────────────── */
@@ -115,6 +115,7 @@ window#waybar {
     color: @yellow;
     font-size: 13px;
     text-shadow: 0 0 8px rgba(255, 230, 0, 0.35);
+    margin-right: 8px;
 }
 
 #custom-weather:hover {
@@ -154,6 +155,7 @@ window#waybar {
 #memory {
     color: @cyan;
     min-width: 64px;
+    margin-right: 6px;
 }
 
 #memory.high {
@@ -214,6 +216,7 @@ window#waybar {
 #battery {
     color: @green;
     min-width: 72px;
+    margin-right: 6px;
 }
 
 #battery.charging,
@@ -234,9 +237,9 @@ window#waybar {
 
 /* ── Tuned ────────────────────────────────────────────── */
 #custom-tuned {
-    color: @magenta;
+    color: @cyan;
     font-size: 12px;
-    text-shadow: 0 0 6px rgba(221, 68, 255, 0.3);
+    text-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
 }
 
 #custom-tuned:hover {
@@ -262,13 +265,6 @@ window#waybar {
 #custom-power:hover {
     background: @red;
     color: @black;
-}
-
-/* ── Separator ────────────────────────────────────────── */
-#custom-sep {
-    color: @dim;
-    font-size: 11px;
-    padding: 0 2px;
 }
 
 /* ── Media controls ───────────────────────────────────── */
