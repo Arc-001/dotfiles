@@ -11,9 +11,7 @@
   "modules-left": [
     "custom/arch",
     "niri/workspaces",
-    "custom/sep",
     "niri/window",
-    "custom/sep:1",
     "custom/media-prev",
     "mpris",
     "custom/media-next"
@@ -21,19 +19,16 @@
 
   "modules-center": [
     "custom/weather",
-    "custom/sep:4",
     "clock"
   ],
 
   "modules-right": [
     "cpu",
     "memory",
-    "custom/sep:2",
     "network",
     "bluetooth",
     "pulseaudio",
     "battery",
-    "custom/sep:3",
     "custom/tuned",
     "tray",
     "custom/power"
@@ -158,40 +153,10 @@
     "tooltip": true
   },
 
-  "custom/sep:4": {
-    "format": "│",
-    "tooltip": false,
-    "interval": "once"
-  },
-
   "custom/power": {
     "format": "⏻",
     "on-click": "niri msg action quit",
     "tooltip-format": "exit niri"
-  },
-
-  "custom/sep": {
-    "format": "│",
-    "tooltip": false,
-    "interval": "once"
-  },
-
-  "custom/sep:1": {
-    "format": "│",
-    "tooltip": false,
-    "interval": "once"
-  },
-
-  "custom/sep:2": {
-    "format": "│",
-    "tooltip": false,
-    "interval": "once"
-  },
-
-  "custom/sep:3": {
-    "format": "│",
-    "tooltip": false,
-    "interval": "once"
   },
 
   "custom/media-prev": {
