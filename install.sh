@@ -33,5 +33,6 @@ link "$DOTFILES/waybarConf"                 "$CONFIG/waybar"
 
 chmod +x "$DOTFILES/waybarConf/scripts/"*.sh
 chmod +x "$DOTFILES/sweep.sh"
+chmod +x "$DOTFILES/revert.sh"
 
 echo "done"
