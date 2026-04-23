@@ -2,9 +2,6 @@
   "layer": "top",
   "position": "top",
   "height": 30,
-  "margin-top": 0,
-  "margin-left": 0,
-  "margin-right": 0,
   "exclusive": true,
   "reload_style_on_change": true,
 
