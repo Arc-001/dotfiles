@@ -40,7 +40,7 @@
   ],
 
   "custom/arch": {
-    "format": "  ",
+    "format": "󰣇",
     "tooltip": false
   },
 
@@ -63,10 +63,19 @@
   },
 
   "clock": {
-    "format": " {:%H:%M}",
-    "format-alt": " {:%a, %d %b %Y}",
+    "format": " 󰥔 {:%H:%M}",
+    "format-alt": " 󰃭 {:%a, %d %b %Y}",
     "interval": 1,
-    "tooltip-format": "<tt>{:%B %Y}\n{calendar}</tt>"
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "format": {
+        "months": "<span color='#00e5ff'><b>{}</b></span>",
+        "days": "<span color='#eeffee'><b>{}</b></span>",
+        "weekdays": "<span color='#ffe600'><b>{}</b></span>",
+        "today": "<span color='#ff0044'><b><u>{}</u></b></span>"
+      }
+    }
   },
 
   "cpu": {
