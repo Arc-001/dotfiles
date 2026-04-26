@@ -1,61 +1,125 @@
 #!/usr/bin/env bash
 
-API_KEY="Inert your api key"
+API_KEY="insert your api key here"
 
-LOCATION=$(curl -sf "https://ipinfo.io/json")
-if [[ -z "$LOCATION" ]]; then
-    echo '{"text":"󰖑 N/A","tooltip":"Could not detect location"}'
+# Set this to skip location detection and use a fixed city (e.g. "Chennai,IN")
+CITY_OVERRIDE="Chennai,IN"
+
+if [[ -n "$CITY_OVERRIDE" ]]; then
+  GEO=$(curl -sf --max-time 5 \
+    "https://nominatim.openstreetmap.org/search?q=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote('$CITY_OVERRIDE'))")&format=json&limit=1" \
+    -H "User-Agent: waybar-weather/1.0")
+  LAT=$(echo "$GEO" | jq -r '.[0].lat')
+  LON=$(echo "$GEO" | jq -r '.[0].lon')
+  CITY=$(echo "$CITY_OVERRIDE" | cut -d',' -f1)
+  REGION=""
+  if [[ -z "$LAT" || "$LAT" == "null" ]]; then
+    echo '{"text":"󰖑 N/A","tooltip":"Could not geocode city override"}'
     exit 0
-fi
+  fi
+else
 
-LAT=$(echo "$LOCATION" | grep -oP '"loc":\s*"\K[^,]+(?=,)')
-LON=$(echo "$LOCATION" | grep -oP '"loc":\s*"[^,]+,\K[^"]+')
-CITY=$(echo "$LOCATION" | grep -oP '"city":\s*"\K[^"]+')
-REGION=$(echo "$LOCATION" | grep -oP '"region":\s*"\K[^"]+')
+  # Get device location via GeoClue2; fall back to IP-based if unavailable
+  GEOCLUE_LOC=$(
+    python3 - <<'PYEOF' 2>/dev/null
+import gi, signal
+gi.require_version('Geoclue', '2.0')
+from gi.repository import Geoclue, GLib
+
+loop = GLib.MainLoop()
+result = {}
+
+def on_location(client, _):
+    loc = client.get_location()
+    if loc:
+        result['lat'] = loc.get_property('latitude')
+        result['lon'] = loc.get_property('longitude')
+    loop.quit()
+
+def timeout():
+    loop.quit()
+    return False
+
+try:
+    client = Geoclue.Simple.new_sync('waybar-weather', Geoclue.AccuracyLevel.CITY, None)
+    loc = client.get_location()
+    if loc:
+        print(f"{loc.get_property('latitude')},{loc.get_property('longitude')}")
+except Exception:
+    pass
+PYEOF
+  )
+
+  if [[ -n "$GEOCLUE_LOC" ]]; then
+    LAT=$(echo "$GEOCLUE_LOC" | cut -d',' -f1)
+    LON=$(echo "$GEOCLUE_LOC" | cut -d',' -f2)
+    CITY="Device Location"
+    REGION=""
+  else
+    # IP fallback
+    IPINFO=$(curl -sf --max-time 5 "https://ipinfo.io/json")
+    if [[ -z "$IPINFO" ]]; then
+      echo '{"text":"󰖑 N/A","tooltip":"Could not detect location"}'
+      exit 0
+    fi
+    LAT=$(echo "$IPINFO" | jq -r '.loc | split(",")[0]')
+    LON=$(echo "$IPINFO" | jq -r '.loc | split(",")[1]')
+    CITY=$(echo "$IPINFO" | jq -r '.city')
+    REGION=$(echo "$IPINFO" | jq -r '.region')
+  fi
+
+fi # end CITY_OVERRIDE else
 
 if [[ -z "$LAT" || -z "$LON" ]]; then
-    echo '{"text":"󰖑 N/A","tooltip":"Could not parse location"}'
-    exit 0
+  echo '{"text":"󰖑 N/A","tooltip":"Could not parse location"}'
+  exit 0
 fi
 
-# ── Fetch weather from OWM ────────────────────────────────
-WEATHER=$(curl -sf \
-    "https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}")
+# Reverse geocode city name from GeoClue coords
+if [[ "$CITY" == "Device Location" ]]; then
+  GEO=$(curl -sf --max-time 5 "https://nominatim.openstreetmap.org/reverse?lat=${LAT}&lon=${LON}&format=json" \
+    -H "User-Agent: waybar-weather/1.0")
+  if [[ -n "$GEO" ]]; then
+    CITY=$(echo "$GEO" | jq -r '.address.city // .address.town // .address.village // "Unknown"')
+    REGION=$(echo "$GEO" | jq -r '.address.state // ""')
+  fi
+fi
+
+WEATHER=$(curl -sf --max-time 5 \
+  "https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}")
 
 if [[ -z "$WEATHER" ]]; then
-    echo '{"text":"󰖑 N/A","tooltip":"Could not reach OpenWeatherMap"}'
-    exit 0
+  echo '{"text":"󰖑 N/A","tooltip":"Could not reach OpenWeatherMap"}'
+  exit 0
 fi
 
-# ── Parse fields ──────────────────────────────────────────
-CONDITION=$(echo "$WEATHER" | grep -oP '"main":\s*"\K[^"]+' | head -1)
-DESCRIPTION=$(echo "$WEATHER" | grep -oP '"description":\s*"\K[^"]+' | head -1)
-TEMP=$(echo "$WEATHER" | grep -oP '"temp":\s*\K[0-9.-]+' | head -1)
-FEELS=$(echo "$WEATHER" | grep -oP '"feels_like":\s*\K[0-9.-]+' | head -1)
-HUMIDITY=$(echo "$WEATHER" | grep -oP '"humidity":\s*\K[0-9]+' | head -1)
+CONDITION=$(echo "$WEATHER" | jq -r '.weather[0].main')
+DESCRIPTION=$(echo "$WEATHER" | jq -r '.weather[0].description')
+TEMP=$(echo "$WEATHER" | jq -r '.main.temp')
+FEELS=$(echo "$WEATHER" | jq -r '.main.feels_like')
+HUMIDITY=$(echo "$WEATHER" | jq -r '.main.humidity')
 TEMP_INT=$(printf "%.0f" "$TEMP")
 FEELS_INT=$(printf "%.0f" "$FEELS")
 
-# ── Map condition to Nerd Font v3 icon ────────────────────
 case "$CONDITION" in
-    Clear)        ICON="󰖙" ;;   # sun
-    Clouds)
-        CLOUD_DESC=$(echo "$DESCRIPTION" | tr '[:upper:]' '[:lower:]')
-        if [[ "$CLOUD_DESC" == *"few"* ]]; then
-            ICON="󰖕"             # sun + few clouds
-        else
-            ICON="󰖐"             # cloudy
-        fi ;;
-    Rain|Drizzle)  ICON="󰖗" ;;  # rain
-    Thunderstorm)  ICON="󰖙" ;;  # thunder (use 󰙾 if available)
-    Snow)          ICON="󰼶" ;;  # snow
-    Mist|Fog|Haze|Smoke|Dust|Sand|Ash) ICON="󰖑" ;;  # fog
-    Squall|Tornado) ICON="󰖝" ;; # wind
-    *)             ICON="󰖑" ;;
+Clear) ICON="󰖙" ;;
+Clouds)
+  if [[ "$DESCRIPTION" == *"few"* ]]; then
+    ICON="󰖕"
+  else
+    ICON="󰖐"
+  fi
+  ;;
+Rain | Drizzle) ICON="󰖗" ;;
+Thunderstorm) ICON="󰙾" ;;
+Snow) ICON="󰼶" ;;
+Mist | Fog | Haze | Smoke | Dust | Sand | Ash) ICON="󰖑" ;;
+Squall | Tornado) ICON="󰖝" ;;
+*) ICON="󰖑" ;;
 esac
 
-# ── Output JSON for waybar ────────────────────────────────
+LOCATION_LINE="${CITY}${REGION:+, $REGION}"
 TEXT="${ICON} ${TEMP_INT}°C"
-TOOLTIP="${CITY}, ${REGION}\n${DESCRIPTION^}\n󰔏 ${TEMP_INT}°C  (feels ${FEELS_INT}°C)\n󰖎 Humidity: ${HUMIDITY}%"
+TOOLTIP="${LOCATION_LINE}\n${DESCRIPTION^}\n󰔏 ${TEMP_INT}°C  (feels ${FEELS_INT}°C)\n󰖎 Humidity: ${HUMIDITY}%"
 
 echo "{\"text\":\"${TEXT}\",\"tooltip\":\"${TOOLTIP}\"}"
